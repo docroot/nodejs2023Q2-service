@@ -142,13 +142,11 @@ export class ImDbService implements DataBaseInterface {
   }
 
   updateAlbum(id: string, dto: UpdateAlbumDto): Album {
-    console.log(dto);
     if (uuid.validate(id)) {
       const album = this.albums.get(id);
       if (!album) return null;
       if (!(dto.artistId === undefined)) {
         const artist = this.getArtist(dto.artistId);
-        console.log(artist);
         if (!artist) {
           return null;
         }
