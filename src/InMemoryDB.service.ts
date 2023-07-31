@@ -10,17 +10,22 @@ import { Artist } from './artist/entities/artist.entity';
 import { CreateAlbumDto } from './album/dto/create-album.dto';
 import { UpdateAlbumDto } from './album/dto/update-album.dto';
 import { Album } from './album/entities/album.entity';
+import { Track } from './track/entities/track.entity';
+import { UpdateTrackDto } from './track/dto/update-track.dto';
+import { CreateTrackDto } from './track/dto/create-track.dto';
 
 @Injectable()
 export class ImDbService implements DataBaseInterface {
   users: Map<string, User>;
   artists: Map<string, Artist>;
   albums: Map<string, Album>;
+  tracks: Map<string, Track>;
 
   constructor() {
     this.users = new Map<string, User>();
     this.artists = new Map<string, Artist>();
     this.albums = new Map<string, Album>();
+    this.tracks = new Map<string, Track>();
   }
 
   getUsers(): User[] {
@@ -165,6 +170,64 @@ export class ImDbService implements DataBaseInterface {
       const album = this.albums.get(id);
       if (!album) return null;
       this.albums.delete(id);
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  getTracks(): Track[] {
+    const res = new Array<Track>(...this.tracks.values());
+    return res;
+  }
+
+  getTrack(id: string): Track {
+    if (uuid.validate(id)) {
+      return this.tracks.get(id);
+    } else {
+      return null;
+    }
+  }
+
+  addTrack(dto: CreateTrackDto): Track {
+    const track = new Track();
+    track.id = uuid.v4();
+    Object.assign(track, dto);
+    this.tracks.set(track.id, track);
+    return track;
+  }
+
+  updateTrack(id: string, dto: UpdateTrackDto): Track {
+    if (uuid.validate(id)) {
+      const track = this.tracks.get(id);
+      if (!track) return null;
+      if (dto.artistId) {
+        const artist = this.getArtist(dto.artistId);
+        if (!artist) {
+          return null;
+        }
+        track.artistId = dto.artistId;
+      }
+      if (dto.albumId) {
+        const album = this.getAlbum(dto.albumId);
+        if (!album) {
+          return null;
+        }
+        track.artistId = dto.artistId;
+      }
+      if (dto.name) track.name = dto.name;
+      if (dto.duration) track.duration = dto.duration;
+      return track;
+    } else {
+      return null;
+    }
+  }
+
+  delTrack(id: string): boolean {
+    if (uuid.validate(id)) {
+      const track = this.tracks.get(id);
+      if (!track) return null;
+      this.tracks.delete(id);
       return true;
     } else {
       return false;

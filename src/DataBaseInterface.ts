@@ -7,6 +7,9 @@ import { UpdateArtistDto } from './artist/dto/update-artist.dto';
 import { Album } from './album/entities/album.entity';
 import { CreateAlbumDto } from './album/dto/create-album.dto';
 import { UpdateAlbumDto } from './album/dto/update-album.dto';
+import { Track } from './track/entities/track.entity';
+import { UpdateTrackDto } from './track/dto/update-track.dto';
+import { CreateTrackDto } from './track/dto/create-track.dto';
 
 export interface DataBaseInterface {
   getUsers(): User[];
@@ -26,4 +29,10 @@ export interface DataBaseInterface {
   addAlbum(dto: CreateAlbumDto): Album;
   updateAlbum(id: string, dto: UpdateAlbumDto): Album;
   delAlbum(id: string): boolean;
+
+  getTracks(): Track[];
+  getTrack(id: string): Track;
+  addTrack(dto: CreateTrackDto): Track;
+  updateTrack(id: string, dto: UpdateTrackDto): Track;
+  delTrack(id: string): boolean;
 }
