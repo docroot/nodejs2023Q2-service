@@ -118,11 +118,29 @@ export class ImDbService implements DataBaseInterface {
     if (uuid.validate(id)) {
       const artist = this.artists.get(id);
       if (!artist) return null;
+      this.delArtistFromAlbums(id);
+      this.delArtistFromTracks(id);
       this.artists.delete(id);
       return true;
     } else {
       return false;
     }
+  }
+
+  delArtistFromAlbums(id: string) {
+    this.albums.forEach((album, albumId) => {
+      if (album && album.artistId === id) {
+        album.artistId = null;
+      }
+    });
+  }
+
+  delArtistFromTracks(id: string) {
+    this.tracks.forEach((track, trakckId) => {
+      if (track && track.artistId === id) {
+        track.artistId = null;
+      }
+    });
   }
 
   getAlbums(): Album[] {
@@ -169,11 +187,20 @@ export class ImDbService implements DataBaseInterface {
     if (uuid.validate(id)) {
       const album = this.albums.get(id);
       if (!album) return null;
+      this.delAlbumFromTracks(id);
       this.albums.delete(id);
       return true;
     } else {
       return false;
     }
+  }
+
+  delAlbumFromTracks(id: string) {
+    this.tracks.forEach((track, trakckId) => {
+      if (track && track.albumId === id) {
+        track.albumId = null;
+      }
+    });
   }
 
   getTracks(): Track[] {
