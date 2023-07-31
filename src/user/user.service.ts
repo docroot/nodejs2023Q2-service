@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 // import { DataBaseInterface } from 'src/DataBaseInterface';
-import { ImDbService } from 'src/ImDB.service';
+import { ImDbService } from 'src/InMemoryDB.service';
 import { User } from './entities/user.entity';
 import * as uuid from 'uuid';
 

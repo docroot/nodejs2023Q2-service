@@ -12,8 +12,8 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(new ValidationPipe());
   const config = new DocumentBuilder()
-    .setTitle('Library APP')
-    .setDescription('The Library APP API description')
+    .setTitle('The Home Library Service')
+    .setDescription('The Home Library Service API description')
     .setVersion('1.0')
     .addTag('library')
     .build();

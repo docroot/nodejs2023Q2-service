@@ -4,7 +4,6 @@ import {
   Post,
   Put,
   Body,
-  Param,
   Delete,
   Res,
   HttpStatus,
@@ -15,7 +14,6 @@ import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Response } from 'express';
-import * as uuid from 'uuid';
 import { UUIDParam } from 'src/UUIdParam';
 
 @Controller('user')
@@ -40,10 +38,6 @@ export class UserController {
     @UUIDParam('id') id: string,
     @Res({ passthrough: true }) res: Response,
   ) {
-    // if (!uuid.validate(id)) {
-    //   res.status(HttpStatus.BAD_REQUEST);
-    //   return null;
-    // }
     const user = this.userService.findOne(id);
     if (!user) {
       res.status(HttpStatus.NOT_FOUND);
@@ -59,19 +53,6 @@ export class UserController {
     @Body() updateUserDto: UpdateUserDto,
     @Res({ passthrough: true }) res: Response,
   ) {
-    // if (!uuid.validate(id)) {
-    //   res.status(HttpStatus.BAD_REQUEST);
-    //   return null;
-    // }
-    // if (
-    //   !updateUserDto.newPassword ||
-    //   updateUserDto.newPassword.length === 0 ||
-    //   !updateUserDto.newPassword ||
-    //   updateUserDto.newPassword.length === 0
-    // ) {
-    //   res.status(HttpStatus.BAD_REQUEST);
-    //   return null;
-    // }
     const user = this.userService.findOne(id);
     if (!user) {
       res.status(HttpStatus.NOT_FOUND);
@@ -90,11 +71,6 @@ export class UserController {
     @UUIDParam('id') id: string,
     @Res({ passthrough: true }) res: Response,
   ) {
-    // if (!uuid.validate(id)) {
-    //   res.status(HttpStatus.BAD_REQUEST);
-    //   return;
-    // }
-
     if (this.userService.remove(id)) {
       res.status(HttpStatus.NO_CONTENT);
     } else {

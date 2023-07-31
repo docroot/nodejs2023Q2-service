@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UserController } from './user.controller';
-import { ImDbService } from 'src/ImDB.service';
+import { ImDbService } from 'src/InMemoryDB.service';
 
 @Module({
   controllers: [UserController],
