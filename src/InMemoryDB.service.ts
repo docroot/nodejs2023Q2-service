@@ -13,6 +13,8 @@ import { Album } from './album/entities/album.entity';
 import { Track } from './track/entities/track.entity';
 import { UpdateTrackDto } from './track/dto/update-track.dto';
 import { CreateTrackDto } from './track/dto/create-track.dto';
+import { Fav } from './favs/entities/fav.entity';
+import { FavsDto } from './favs/dto/favs.dto';
 
 @Injectable()
 export class ImDbService implements DataBaseInterface {
@@ -20,12 +22,14 @@ export class ImDbService implements DataBaseInterface {
   artists: Map<string, Artist>;
   albums: Map<string, Album>;
   tracks: Map<string, Track>;
+  favs: Fav;
 
   constructor() {
     this.users = new Map<string, User>();
     this.artists = new Map<string, Artist>();
     this.albums = new Map<string, Album>();
     this.tracks = new Map<string, Track>();
+    this.favs = new Fav();
   }
 
   getUsers(): User[] {
@@ -128,7 +132,7 @@ export class ImDbService implements DataBaseInterface {
   }
 
   delArtistFromAlbums(id: string) {
-    this.albums.forEach((album, albumId) => {
+    this.albums.forEach((album) => {
       if (album && album.artistId === id) {
         album.artistId = null;
       }
@@ -136,7 +140,7 @@ export class ImDbService implements DataBaseInterface {
   }
 
   delArtistFromTracks(id: string) {
-    this.tracks.forEach((track, trakckId) => {
+    this.tracks.forEach((track) => {
       if (track && track.artistId === id) {
         track.artistId = null;
       }
@@ -196,7 +200,7 @@ export class ImDbService implements DataBaseInterface {
   }
 
   delAlbumFromTracks(id: string) {
-    this.tracks.forEach((track, trakckId) => {
+    this.tracks.forEach((track) => {
       if (track && track.albumId === id) {
         track.albumId = null;
       }
@@ -259,5 +263,97 @@ export class ImDbService implements DataBaseInterface {
     } else {
       return false;
     }
+  }
+
+  getFavs(): FavsDto {
+    const dto = new FavsDto();
+    this.favs.albums.forEach((albumId) => {
+      const album = this.albums.get(albumId);
+      if (album) dto.albums.push(album);
+    });
+    this.favs.artists.forEach((artistId) => {
+      const artist = this.artists.get(artistId);
+      if (artist) dto.artists.push(artist);
+    });
+    this.favs.tracks.forEach((trackId) => {
+      const track = this.tracks.get(trackId);
+      if (track) dto.tracks.push(track);
+    });
+    return dto;
+  }
+
+  favsAddTrack(id: string): boolean {
+    if (
+      this.favs.tracks.find((trackId) => {
+        return trackId === id;
+      })
+    ) {
+      return true;
+    }
+    const track = this.tracks.get(id);
+    if (track) {
+      this.favs.tracks.push(id);
+      return true;
+    }
+    return false;
+  }
+
+  favsRemoveTrack(id: string): boolean {
+    const trackIdx = this.favs.tracks.findIndex((trackId) => {
+      return trackId === id;
+    });
+    if (trackIdx === -1) return false;
+    this.favs.tracks.splice(trackIdx, 1);
+    return true;
+  }
+
+  favsAddArtist(id: string): boolean {
+    if (
+      this.favs.artists.find((artistId) => {
+        return artistId === id;
+      })
+    ) {
+      return true;
+    }
+    const artist = this.artists.get(id);
+    if (artist) {
+      this.favs.artists.push(id);
+      return true;
+    }
+    return false;
+  }
+
+  favsRemoveArtist(id: string): boolean {
+    const artistIdx = this.favs.artists.findIndex((artistId) => {
+      return artistId === id;
+    });
+    if (artistIdx === -1) return false;
+    this.favs.artists.splice(artistIdx, 1);
+    return true;
+  }
+
+  favsAddAlbum(id: string): boolean {
+    if (
+      this.favs.albums.find((albumId) => {
+        return albumId === id;
+      })
+    ) {
+      return true;
+    }
+    const album = this.albums.get(id);
+    if (album) {
+      this.favs.albums.push(id);
+      return true;
+    }
+    return false;
+  }
+
+  favsRemoveAlbum(id: string): boolean {
+    const albumIdx = this.favs.albums.findIndex((albumId) => {
+      return albumId === id;
+    });
+    if (albumIdx === -1) return false;
+    this.favs.albums.splice(albumIdx, 1);
+    return true;
   }
 }

@@ -10,6 +10,7 @@ import { UpdateAlbumDto } from './album/dto/update-album.dto';
 import { Track } from './track/entities/track.entity';
 import { UpdateTrackDto } from './track/dto/update-track.dto';
 import { CreateTrackDto } from './track/dto/create-track.dto';
+import { FavsDto } from './favs/dto/favs.dto';
 
 export interface DataBaseInterface {
   getUsers(): User[];
@@ -35,4 +36,12 @@ export interface DataBaseInterface {
   addTrack(dto: CreateTrackDto): Track;
   updateTrack(id: string, dto: UpdateTrackDto): Track;
   delTrack(id: string): boolean;
+
+  getFavs(): FavsDto;
+  favsAddTrack(id: string): boolean;
+  favsRemoveTrack(id: string): boolean;
+  favsAddArtist(id: string): boolean;
+  favsRemoveArtist(id: string): boolean;
+  favsAddAlbum(id: string): boolean;
+  favsRemoveAlbum(id: string): boolean;
 }
