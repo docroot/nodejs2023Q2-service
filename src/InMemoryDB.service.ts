@@ -7,15 +7,20 @@ import { Injectable } from '@nestjs/common';
 import { CreateArtistDto } from './artist/dto/create-artist.dto';
 import { UpdateArtistDto } from './artist/dto/update-artist.dto';
 import { Artist } from './artist/entities/artist.entity';
+import { CreateAlbumDto } from './album/dto/create-album.dto';
+import { UpdateAlbumDto } from './album/dto/update-album.dto';
+import { Album } from './album/entities/album.entity';
 
 @Injectable()
 export class ImDbService implements DataBaseInterface {
   users: Map<string, User>;
   artists: Map<string, Artist>;
+  albums: Map<string, Album>;
 
   constructor() {
     this.users = new Map<string, User>();
     this.artists = new Map<string, Artist>();
+    this.albums = new Map<string, Album>();
   }
 
   getUsers(): User[] {
@@ -102,8 +107,6 @@ export class ImDbService implements DataBaseInterface {
     } else {
       return null;
     }
-
-    throw new Error('Method not implemented.');
   }
 
   delArtist(id: string): boolean {
@@ -111,6 +114,59 @@ export class ImDbService implements DataBaseInterface {
       const artist = this.artists.get(id);
       if (!artist) return null;
       this.artists.delete(id);
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  getAlbums(): Album[] {
+    const res = new Array<Album>(...this.albums.values());
+    return res;
+  }
+
+  getAlbum(id: string): Album {
+    if (uuid.validate(id)) {
+      return this.albums.get(id);
+    } else {
+      return null;
+    }
+  }
+
+  addAlbum(dto: CreateAlbumDto): Album {
+    const album = new Album();
+    album.id = uuid.v4();
+    Object.assign(album, dto);
+    this.albums.set(album.id, album);
+    return album;
+  }
+
+  updateAlbum(id: string, dto: UpdateAlbumDto): Album {
+    console.log(dto);
+    if (uuid.validate(id)) {
+      const album = this.albums.get(id);
+      if (!album) return null;
+      if (!(dto.artistId === undefined)) {
+        const artist = this.getArtist(dto.artistId);
+        console.log(artist);
+        if (!artist) {
+          return null;
+        }
+        album.artistId = dto.artistId;
+      }
+      if (dto.name) album.name = dto.name;
+      if (dto.year) album.year = dto.year;
+      return album;
+    } else {
+      return null;
+    }
+  }
+
+  delAlbum(id: string): boolean {
+    if (uuid.validate(id)) {
+      const album = this.albums.get(id);
+      if (!album) return null;
+      this.albums.delete(id);
       return true;
     } else {
       return false;
