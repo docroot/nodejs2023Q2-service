@@ -10,6 +10,8 @@
 
 FROM ubuntu:22.04 as build
 
+ARG PORT=4000
+
 RUN apt-get update && apt-get install -y curl ca-certificates
 
 RUN adduser --system nodejs
@@ -28,7 +30,7 @@ WORKDIR /home/nodejs/app
 RUN . ~/.bashrc && npm install && npm run build && npm cache clean --force && nvm cache clear && rm -rf ~/app/node_modules
 
 # build production image
-FROM ubuntu:22.04
+FROM ubuntu:22.04 as prod
 
 USER root
 RUN adduser --system nodejs
@@ -46,5 +48,5 @@ USER root
 RUN chown -R root:root /home/nodejs/app
 
 USER nodejs
-EXPOSE 4000
+EXPOSE $PORT
 CMD . ~/.bashrc; node /home/nodejs/app/dist/bundle.js

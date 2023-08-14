@@ -1,0 +1,68 @@
+version: '3'
+
+services:
+  pgsql:
+    container_name: rsschool-pgsql
+    build:
+      context: ./docker/postgresql
+      dockerfile: Dockerfile
+      args:
+        - POSTGRES_PORT=${POSTGRES_PORT}
+        - POSTGRES_USER=${POSTGRES_USER}
+        - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+        - POSTGRES_DB=${POSTGRES_DB}
+    restart: always
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_PORT=${POSTGRES_PORT}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    ports:
+      - ${POSTGRES_PORT}:${POSTGRES_PORT}
+    volumes:
+      - pg_data:/var/lib/postgresql/
+      - logs:/var/logs
+    networks:
+      - rsschool-network
+
+  nodejs:
+    container_name: rsschool-nodejs
+    build:
+      context: ./
+      dockerfile: Dockerfile
+      args:
+        - PORT=${PORT}
+        - POSTGRES_PORT=${POSTGRES_PORT}
+        - POSTGRES_USER=${POSTGRES_USER}
+        - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+        - POSTGRES_DB=${POSTGRES_DB}
+    restart: always
+    env_file:
+      - .env
+    environment:
+      - PORT=${PORT}
+      - POSTGRES_PORT=${POSTGRES_PORT}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    ports:
+      - ${PORT}:${PORT}
+    depends_on:
+      - pgsql
+    networks:
+      - rsschool-network
+
+volumes:
+  pg_data:
+    driver: local
+    name: rsschool-pgdata
+  logs:
+    driver: local
+    name: rsschool-pglogs
+
+networks:
+  rsschool-network:
+    driver: bridge
+    name: rsschool-network

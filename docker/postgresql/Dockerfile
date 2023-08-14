@@ -1,14 +1,15 @@
 # Reference 
 # https://docs.docker.com/engine/reference/run/commandline/
 # Build Docker File
-# docker build -t <new_container_name> .
+# docker build -t rsschool-pgsql .
 # Run Docker File
-# docker run -p 0.0.0.0:5432:5432/tcp --network rsschool-nw --rm -d -P --name postgresdb rsschool-postgres    
+# docker run -p 0.0.0.0:5432:5432/tcp --rm -d -P --name rsschool-pgsql rsschool-pgsql
 # Connect with psql
 # psql -h localhost -p 5432 -d revamp -U admin --password      
 
-
 FROM ubuntu:22.04
+
+ARG POSTGRES_PORT=5432
 
 # Add the PostgreSQL PGP key to verify their Debian packages.
 # It should be the same key as https://www.postgresql.org/media/keys/ACCC4CF8.asc
@@ -33,22 +34,11 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update \
 # Note: The official Debian and Ubuntu images automatically ``apt-get clean``
 # after each ``apt-get``
 
+COPY ./volume_init.sh /
+RUN chmod a+x /volume_init.sh
+
 # Run the rest of the commands as the ``postgres`` user created by the ``postgres-15`` package when it was ``apt-get installed``
 USER postgres
-
-# Create a PostgreSQL role named ``docker`` with ``docker`` as the password and
-# then create a database `docker` owned by the ``docker`` role.
-# Note: here we use ``&&\`` to run commands one after the other - the ``\``
-#       allows the RUN command to span multiple lines.
-# User = admin
-# password = password
-# role = admin
-# database = revamp
-
-
-RUN /etc/init.d/postgresql start \
-    && psql --command "CREATE USER admin WITH SUPERUSER PASSWORD 'password';"
-#   && createdb -O admin revamp
 
 # Adjust PostgreSQL configuration so that remote connections to the
 # database are possible.
@@ -57,12 +47,10 @@ RUN echo "host all  all    0.0.0.0/0  md5" >> /etc/postgresql/15/main/pg_hba.con
 # And add ``listen_addresses`` to ``/etc/postgresql/15/main/postgresql.conf``
 RUN echo "listen_addresses='*'" >> /etc/postgresql/15/main/postgresql.conf
 
+RUN echo "PORT = $POSTGRES_PORT" >> /etc/postgresql/15/main/postgresql.conf
+
 # Expose the PostgreSQL port
-EXPOSE 5432
+EXPOSE $POSTGRES_PORT
 
-# Add VOLUMEs to allow backup of config, logs and databases
-VOLUME  ["/etc/postgresql", "/var/log/postgresql", "/var/lib/postgresql"]
-
-# Set the default command to run when starting the container
-CMD ["/usr/lib/postgresql/15/bin/postgres", "-D", "/var/lib/postgresql/15/main", "-c", "config_file=/etc/postgresql/15/main/postgresql.conf"]
-
+CMD /volume_init.sh \
+    && /usr/lib/postgresql/15/bin/postgres -D /var/lib/postgresql/15/main -c config_file=/etc/postgresql/15/main/postgresql.conf
