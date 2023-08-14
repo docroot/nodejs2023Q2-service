@@ -7,6 +7,9 @@ import { AlbumModule } from './album/album.module';
 import { DbModule } from './db/db.module';
 import { TrackModule } from './track/track.module';
 import { FavsModule } from './favs/favs.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import typeOrmConfig from './typeorm.config';
+import { DataSource } from 'typeorm';
 
 @Module({
   imports: [
@@ -16,8 +19,12 @@ import { FavsModule } from './favs/favs.module';
     DbModule,
     TrackModule,
     FavsModule,
+    TypeOrmModule.forRoot(typeOrmConfig),
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+
+export class AppModule {
+  constructor(private dataSource: DataSource) {}
+}

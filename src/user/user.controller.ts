@@ -34,11 +34,11 @@ export class UserController {
 
   @Get(':id')
   @UseInterceptors(ClassSerializerInterceptor)
-  findOne(
+  async findOne(
     @UUIDParam('id') id: string,
     @Res({ passthrough: true }) res: Response,
   ) {
-    const user = this.userService.findOne(id);
+    const user = await this.userService.findOne(id);
     if (!user) {
       res.status(HttpStatus.NOT_FOUND);
     }
@@ -48,30 +48,34 @@ export class UserController {
 
   @Put(':id')
   @UseInterceptors(ClassSerializerInterceptor)
-  update(
+  async update(
     @UUIDParam('id') id: string,
     @Body() updateUserDto: UpdateUserDto,
     @Res({ passthrough: true }) res: Response,
   ) {
-    const user = this.userService.findOne(id);
+    const user = await this.userService.findOne(id);
     if (!user) {
       res.status(HttpStatus.NOT_FOUND);
-      return null;
+      return false;
     }
     if (updateUserDto.oldPassword !== user.password) {
       res.status(HttpStatus.FORBIDDEN);
-      return null;
+      return false;
     }
 
-    return this.userService.update(id, updateUserDto);
+    const u = await this.userService.update(id, updateUserDto);
+    return u;
+
   }
 
   @Delete(':id')
-  remove(
+  async remove(
     @UUIDParam('id') id: string,
     @Res({ passthrough: true }) res: Response,
   ) {
-    if (this.userService.remove(id)) {
+    const result = await this.userService.remove(id);
+
+    if (result) {
       res.status(HttpStatus.NO_CONTENT);
     } else {
       res.status(HttpStatus.NOT_FOUND);

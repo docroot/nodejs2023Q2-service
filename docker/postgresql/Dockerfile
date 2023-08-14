@@ -1,9 +1,13 @@
 # Reference 
 # https://docs.docker.com/engine/reference/run/commandline/
 # Build Docker File
-# docker build -t rsschool-pgsql .
-# Run Docker File
-# docker run -p 0.0.0.0:5432:5432/tcp --rm -d -P --name rsschool-pgsql rsschool-pgsql
+# docker build -t rsschool_pgsql .
+# Run Docker File (this command can be used if image was built wih docker-compose build)
+# docker run -p 0.0.0.0:5432:5432/tcp --rm -d -P -v rsschool-pgdata:/var/lib/postgresql/ --name rsschool-pgsql rsschool_pgsql
+#
+# IPv6 variant
+# docker run -p [::1]:5432:5432/tcp -p 0.0.0.0:5432:5432/tcp --rm -d -P -v rsschool-pgdata:/var/lib/postgresql/ --name rsschool-pgsql rsschool_pgsql
+#
 # Connect with psql
 # psql -h localhost -p 5432 -d revamp -U admin --password      
 

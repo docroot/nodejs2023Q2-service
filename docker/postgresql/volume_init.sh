@@ -18,6 +18,7 @@ if [ -z "$database_exists" ]; then
     echo "Database '$POSTGRES_DB' does not exist."
     psql -c "CREATE DATABASE $POSTGRES_DB;"
     psql -c "GRANT ALL PRIVILEGES ON DATABASE $POSTGRES_DB TO $POSTGRES_USER;"
+    psql -c "ALTER DATABASE $POSTGRES_DB OWNER TO $POSTGRES_USER;"
 else
     echo "Database '$POSTGRES_DB' exists."
 fi

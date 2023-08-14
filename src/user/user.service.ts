@@ -1,42 +1,65 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-// import { DataBaseInterface } from 'src/DataBaseInterface';
-import { ImDbService } from 'src/InMemoryDB.service';
 import { User } from './entities/user.entity';
 import * as uuid from 'uuid';
 
 @Injectable()
 export class UserService {
-  constructor(private db: ImDbService) {
-    this.db = db;
+  constructor(
+    @InjectRepository(User)
+    private readonly usersRepository: Repository<User> ) {
   }
 
-  create(createUserDto: CreateUserDto): User {
-    return this.db.addUser(createUserDto);
-    // return 'This action adds a new user';
+  async create(dto: CreateUserDto): Promise<User | null> {
+    const timestamp = new Date().getTime();
+    const user = new User({
+      id: uuid.v4(),
+      login: dto.login,
+      password: dto.password,
+      version: 1,
+      createdAt: timestamp,
+      updatedAt: timestamp,
+    });
+
+    const res = await this.usersRepository.insert( user );
+    const id = user.id;
+    const u =  await this.usersRepository.findOneBy({ id });
+    return u;
   }
 
-  findAll(): User[] {
-    return this.db.getUsers();
-    //return `This action returns all user`;
+  findAll():  Promise<User[]> {
+    return this.usersRepository.find();
   }
 
-  findOne(id: string) {
+  async findOne(id: string): Promise<User | null> {
+    return await this.usersRepository.findOneBy({ id });
+  }
+
+  async update(id: string, dto: UpdateUserDto): Promise<User | null> {
     if (uuid.validate(id)) {
-      return this.db.getUser(id);
+      const user = await this.usersRepository.findOneBy({ id });
+      if (!user || !dto.newPassword) return null;
+      user.password = dto.newPassword;
+      user.version++;
+      user.updatedAt = new Date().getTime();
+      await this.usersRepository.update({id}, user);
+      return user;
     } else {
       return null;
     }
   }
 
-  update(id: string, updateUserDto: UpdateUserDto): User {
-    return this.db.updateUser(id, updateUserDto);
-    // return `This action updates a #${id} user`;
-  }
+  async remove(id: string): Promise<boolean> {
+    const user = await this.usersRepository.findOneBy({ id });
 
-  remove(id: string) {
-    return this.db.delUser(id);
-    return `This action removes a #${id} user`;
+    if ( user == null ) {
+      return false;
+    }
+    const res = await this.usersRepository.delete(id);
+
+    return true;
   }
 }
