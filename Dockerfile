@@ -4,12 +4,11 @@
 # docker build -t rsschool-nodejs .
 # Run Docker File
 # docker run -p 0.0.0.0:4000:4000/tcp --rm -d --name rss-nodejs rsschool-nodejs
+#  OR (tests use IPv6 address for localhost)
 # docker run --rm -p 0.0.0.0:4000:4000/tcp -p [::1]:4000:4000 -d --name rss-nodejs rsschool-nodejs
-# Connect with psql
-# psql -h localhost -p 5432 -d revamp -U admin --password      
 
 
-FROM ubuntu:22.04
+FROM ubuntu:22.04 as build
 
 RUN apt-get update && apt-get install -y curl ca-certificates
 
@@ -19,23 +18,33 @@ USER nodejs
 
 RUN cd ~/ && touch .bashrc && curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
 RUN . ~/.bashrc && nvm install lts/hydrogen
-#RUN mkdir ~/app
 WORKDIR  /home/nodejs/
-#COPY src ./src
 COPY ./ ./app/ 
 USER root
 RUN chown -R nodejs /home/nodejs/app
+
 USER nodejs
-#RUN cd ~/app
 WORKDIR /home/nodejs/app
-RUN . ~/.bashrc && npm install && npm run build 
-#COPY ./src ~/app/
-#COPY ../../node_modules ~/app/
-#CMD ["bash", "node", "./dist/bundle.js"]
-#CMD ["bash", "-c", "node", "./dist/bundle.js"]
+RUN . ~/.bashrc && npm install && npm run build && npm cache clean --force && nvm cache clear && rm -rf ~/app/node_modules
 
+# build production image
+FROM ubuntu:22.04
+
+USER root
+RUN adduser --system nodejs
+
+
+# Copy only the necessary artifacts from the previous build stage
+COPY --from=build /home/nodejs/ /home/nodejs/
+RUN chown -R nodejs /home/nodejs/
+USER nodejs
+WORKDIR /home/nodejs/app
+RUN . ~/.bashrc && npm install --omit=dev && npm cache clean --force && nvm cache clear
+
+# change files owner so nodejs user is not able to modify them
+USER root
+RUN chown -R root:root /home/nodejs/app
+
+USER nodejs
 EXPOSE 4000
-
 CMD . ~/.bashrc; node /home/nodejs/app/dist/bundle.js
-#USER root
-#CMD  [/bin/sh]
