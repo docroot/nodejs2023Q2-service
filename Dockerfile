@@ -49,4 +49,4 @@ RUN chown -R root:root /home/nodejs/app
 
 USER nodejs
 EXPOSE $PORT
-CMD . ~/.bashrc; node /home/nodejs/app/dist/bundle.js
+CMD . ~/.bashrc; node /home/nodejs/app/dist/main
