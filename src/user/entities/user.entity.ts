@@ -1,18 +1,14 @@
-import { Exclude, Transform } from 'class-transformer';
+import { Exclude } from 'class-transformer';
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
-
-function BigIntToNumber(): PropertyDecorator {
-  return Transform(value => { const res: number = Number(value); return res; });
-}
 
 class ColumnNumberTransformer {
   public to(data: number): bigint {
-      return BigInt(data);
+    return BigInt(data);
   }
 
   public from(data: bigint): number {
-      const res: number = Number(data);
-      return res;
+    const res: number = Number(data);
+    return res;
   }
 }
 
@@ -31,10 +27,10 @@ export class User {
   @Column()
   version: number;
 
-  @Column({type: 'bigint', transformer: new ColumnNumberTransformer()})
+  @Column({ type: 'bigint', transformer: new ColumnNumberTransformer() })
   createdAt: number;
 
-  @Column({type: 'bigint', transformer: new ColumnNumberTransformer() })
+  @Column({ type: 'bigint', transformer: new ColumnNumberTransformer() })
   updatedAt: number;
 
   constructor(partial: Partial<User>) {

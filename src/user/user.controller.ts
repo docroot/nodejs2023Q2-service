@@ -65,7 +65,6 @@ export class UserController {
 
     const u = await this.userService.update(id, updateUserDto);
     return u;
-
   }
 
   @Delete(':id')

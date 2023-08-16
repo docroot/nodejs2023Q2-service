@@ -10,8 +10,8 @@ import * as uuid from 'uuid';
 export class UserService {
   constructor(
     @InjectRepository(User)
-    private readonly usersRepository: Repository<User> ) {
-  }
+    private readonly usersRepository: Repository<User>,
+  ) {}
 
   async create(dto: CreateUserDto): Promise<User | null> {
     const timestamp = new Date().getTime();
@@ -24,13 +24,13 @@ export class UserService {
       updatedAt: timestamp,
     });
 
-    const res = await this.usersRepository.insert( user );
+    await this.usersRepository.insert(user);
     const id = user.id;
-    const u =  await this.usersRepository.findOneBy({ id });
+    const u = await this.usersRepository.findOneBy({ id });
     return u;
   }
 
-  findAll():  Promise<User[]> {
+  findAll(): Promise<User[]> {
     return this.usersRepository.find();
   }
 
@@ -45,7 +45,7 @@ export class UserService {
       user.password = dto.newPassword;
       user.version++;
       user.updatedAt = new Date().getTime();
-      await this.usersRepository.update({id}, user);
+      await this.usersRepository.update({ id }, user);
       return user;
     } else {
       return null;
@@ -55,10 +55,10 @@ export class UserService {
   async remove(id: string): Promise<boolean> {
     const user = await this.usersRepository.findOneBy({ id });
 
-    if ( user == null ) {
+    if (user == null) {
       return false;
     }
-    const res = await this.usersRepository.delete(id);
+    await this.usersRepository.delete(id);
 
     return true;
   }
