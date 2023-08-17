@@ -1,52 +1,44 @@
-# Reference 
-# https://docs.docker.com/engine/reference/run/commandline/
-# Build Docker File
-# docker build -t rsschool-nodejs .
-# Run Docker File
-# docker run -p 0.0.0.0:4000:4000/tcp --rm -d --name rss-nodejs rsschool-nodejs
-#  OR (tests use IPv6 address for localhost)
-# docker run --rm -p 0.0.0.0:4000:4000/tcp -p [::1]:4000:4000 -d --name rss-nodejs rsschool-nodejs
-
-
-FROM ubuntu:22.04 as build
+# Use an official Node.js runtime as the base image
+FROM node:18-slim as dev
 
 ARG PORT=4000
+ENV PORT=$PORT
 
-RUN apt-get update && apt-get install -y curl ca-certificates
+# Set the working directory in the container
+WORKDIR /usr/src/app
 
-RUN adduser --system nodejs
+# Copy package.json and package-lock.json to the working directory
+# Copy the application code into the container
+COPY *.json ./
 
-USER nodejs
+COPY src ./src
 
-RUN cd ~/ && touch .bashrc && curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
-RUN . ~/.bashrc && nvm install lts/hydrogen
-WORKDIR  /home/nodejs/
-COPY ./ ./app/ 
-USER root
-RUN chown -R nodejs /home/nodejs/app
+COPY .env  ./
 
-USER nodejs
-WORKDIR /home/nodejs/app
-RUN . ~/.bashrc && npm install && npm run build && npm cache clean --force && nvm cache clear && rm -rf ~/app/node_modules
+# Install application dependencies
+RUN npm install && npm run build
 
-# build production image
-FROM ubuntu:22.04 as prod
-
-USER root
-RUN adduser --system nodejs
-
-
-# Copy only the necessary artifacts from the previous build stage
-COPY --from=build /home/nodejs/ /home/nodejs/
-RUN chown -R nodejs /home/nodejs/
-USER nodejs
-WORKDIR /home/nodejs/app
-RUN . ~/.bashrc && npm install --omit=dev && npm cache clean --force && nvm cache clear
-
-# change files owner so nodejs user is not able to modify them
-USER root
-RUN chown -R root:root /home/nodejs/app
-
-USER nodejs
+# Expose a port that the application will listen on
 EXPOSE $PORT
-CMD . ~/.bashrc; node /home/nodejs/app/dist/main
+
+# Command to run your application
+CMD [ "npm", "run", "start:dev" ]
+
+
+FROM node:18-slim as prod
+
+
+# Set the working directory in the container
+WORKDIR /usr/src/app
+
+COPY --from=dev /usr/src/app/*.json ./
+COPY --from=dev /usr/src/app/dist/ ./dist/
+COPY --from=dev /usr/src/app/.env ./
+
+# Install application dependencies
+RUN npm install --omit=dev && npm cache clean --force
+# Expose a port that the application will listen on
+EXPOSE $PORT
+
+# Command to run your application
+CMD [ "npm", "run", "start:prod" ]

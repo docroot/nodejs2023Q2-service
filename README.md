@@ -31,20 +31,26 @@ For more information about OpenAPI/Swagger please visit https://swagger.io/.
 
 First, you need to have Docker installed.
 
+### Creating volume for storing DB
+
+```
+docker volume create --name=pg_data
+```
+
 ### building postgres and app images
 
 Run following command from root directory of the project:
 
 ```
-docker-compose build
+docker compose build
 ```
 
 ### Running using Docker
 
-To run app execute (currently the app's container is broken, I notice an issue with combination of TypeORM and Webkit too late):
+To run app execute:
 
 ```
-docker-compose up -d
+docker compose up -d
 ```
 
 -d options is needed for detaching from the console
@@ -52,8 +58,20 @@ docker-compose up -d
 To stop app:
 
 ```
-docker-compose down
+docker compose down
 ```
+
+To use dev mode (auto restart app on changes in src folder) specify dev configuration file:
+
+```
+docker compose -f ./docker-compose-dev.yml build
+
+docker compose -f ./docker-compose-dev.yml up
+
+docker compose -f ./docker-compose-dev.yml down
+
+```
+
 
 ### Mixed execution
 

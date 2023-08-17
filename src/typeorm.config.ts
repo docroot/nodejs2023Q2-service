@@ -4,11 +4,11 @@ import * as dotenv from 'dotenv';
 
 dotenv.config();
 
-const pg_host = process.env['POSTGRES_HOST'] ?? 'localhost';
-const pg_port = Number(process.env['POSTGRES_PORT']) ?? 5432;
-const pg_user = process.env['POSTGRES_USER'] ?? 'nodejs';
-const pg_pass = process.env['POSTGRES_PASSWORD'] ?? 'password';
-const pg_db = process.env['POSTGRES_DB'] ?? 'nodejs';
+const pg_host = process.env['DB_HOST'] ?? 'localhost';
+const pg_port = Number(process.env['DB_PORT']) ?? 5432;
+const pg_user = process.env['DB_USER'] ?? 'nodejs';
+const pg_pass = process.env['DB_PASSWORD'] ?? 'password';
+const pg_db = process.env['DB_NAME'] ?? 'nodejs';
 
 const typeOrmConfig: TypeOrmModuleOptions = {
   type: 'postgres',

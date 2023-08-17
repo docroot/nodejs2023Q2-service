@@ -28,12 +28,12 @@ services:
     networks:
       - rsschool-network
 
-  nodejs:
-    container_name: rsschool-nodejs
+  nodejs_dev:
+    container_name: rsschool-nodejs-dev
     build:
       context: ./
       dockerfile: Dockerfile
-      target: prod
+      target: dev
       args:
         - PORT=${PORT}
         - DB_PORT=${DB_PORT}
@@ -51,6 +51,8 @@ services:
       - DB_NAME=${DB_NAME}
     ports:
       - ${PORT}:${PORT}
+    volumes:
+      - ./src:/usr/src/app/src
     depends_on:
       - pgsql
     networks:
