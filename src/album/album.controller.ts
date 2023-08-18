@@ -29,11 +29,11 @@ export class AlbumController {
   }
 
   @Get(':id')
-  findOne(
+  async findOne(
     @UUIDParam('id') id: string,
     @Res({ passthrough: true }) res: Response,
   ) {
-    const album = this.albumService.findOne(id);
+    const album = await this.albumService.findOne(id);
     if (!album) {
       res.status(HttpStatus.NOT_FOUND);
     }
@@ -42,26 +42,25 @@ export class AlbumController {
   }
 
   @Put(':id')
-  update(
+  async update(
     @UUIDParam('id') id: string,
     @Body() updateAlbumDto: UpdateAlbumDto,
     @Res({ passthrough: true }) res: Response,
   ) {
-    const album = this.albumService.findOne(id);
-    if (!album) {
+    if (!(await this.albumService.findOne(id))) {
       res.status(HttpStatus.NOT_FOUND);
       return null;
     }
 
-    return this.albumService.update(id, updateAlbumDto);
+    return await this.albumService.update(id, updateAlbumDto);
   }
 
   @Delete(':id')
-  remove(
+  async remove(
     @UUIDParam('id') id: string,
     @Res({ passthrough: true }) res: Response,
   ) {
-    if (this.albumService.remove(id)) {
+    if (await this.albumService.remove(id)) {
       res.status(HttpStatus.NO_CONTENT);
     } else {
       res.status(HttpStatus.NOT_FOUND);

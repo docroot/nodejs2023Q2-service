@@ -1,6 +1,5 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import * as dotenv from 'dotenv';
-//import { User } from './user/entities/user.entity';
 
 dotenv.config();
 
@@ -18,7 +17,6 @@ const typeOrmConfig: TypeOrmModuleOptions = {
   password: pg_pass,
   database: pg_db,
   entities: [__dirname + '/**/*.entity{.ts,.js}'],
-  //entities: [User],
   synchronize: true, // Only for development, set to false in production
 };
 

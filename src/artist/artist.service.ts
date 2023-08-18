@@ -1,37 +1,72 @@
 import { Injectable } from '@nestjs/common';
+import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { CreateArtistDto } from './dto/create-artist.dto';
 import { UpdateArtistDto } from './dto/update-artist.dto';
 import { Artist } from './entities/artist.entity';
-import { ImDbService } from 'src/InMemoryDB.service';
+import { Album } from 'src/album/entities/album.entity';
 import * as uuid from 'uuid';
+import { Track } from 'src/track/entities/track.entity';
 
 @Injectable()
 export class ArtistService {
-  constructor(private db: ImDbService) {
-    this.db = db;
+  constructor(
+    @InjectRepository(Artist)
+    private readonly repository: Repository<Artist>,
+    @InjectDataSource()
+    private readonly dataSource: DataSource,
+  ) {}
+
+  async create(dto: CreateArtistDto): Promise<Artist | null> {
+    const artist = new Artist();
+    artist.id = uuid.v4();
+    Object.assign(artist, dto);
+    await this.repository.insert(artist);
+    const id = artist.id;
+    const a = await this.repository.findOneBy({ id });
+    return a;
   }
 
-  create(createArtistDto: CreateArtistDto): Artist {
-    return this.db.addArtist(createArtistDto);
+  findAll(): Promise<Artist[]> {
+    return this.repository.find();
   }
 
-  findAll(): Artist[] {
-    return this.db.getArtists();
-  }
-
-  findOne(id: string): Artist {
+  async findOne(id: string): Promise<Artist | null> {
     if (uuid.validate(id)) {
-      return this.db.getArtist(id);
+      return await this.repository.findOneBy({ id });
     } else {
       return null;
     }
   }
 
-  update(id: string, updateArtistDto: UpdateArtistDto): Artist {
-    return this.db.updateArtist(id, updateArtistDto);
+  async update(id: string, dto: UpdateArtistDto): Promise<Artist | null> {
+    if (uuid.validate(id)) {
+      const artist = await this.repository.findOneBy({ id });
+      if (!artist) return null;
+      if (dto.name) artist.name = dto.name;
+      if (!(dto.grammy === undefined)) artist.grammy = dto.grammy;
+      await this.repository.update({ id }, artist);
+      return artist;
+    } else {
+      return null;
+    }
   }
 
-  remove(id: string): boolean {
-    return this.db.delArtist(id);
+  async remove(id: string): Promise<boolean> {
+    const artist = await this.repository.findOneBy({ id });
+
+    if (artist == null) {
+      return false;
+    }
+
+    await this.dataSource
+      .getRepository(Album)
+      .update({ artistId: id }, { artist: null, artistId: null });
+    await this.dataSource
+      .getRepository(Track)
+      .update({ artistId: id }, { artist: null, artistId: null });
+    await this.repository.delete(id);
+
+    return true;
   }
 }

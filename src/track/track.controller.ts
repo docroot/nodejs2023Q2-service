@@ -29,11 +29,11 @@ export class TrackController {
   }
 
   @Get(':id')
-  findOne(
+  async findOne(
     @UUIDParam('id') id: string,
     @Res({ passthrough: true }) res: Response,
   ) {
-    const album = this.trackService.findOne(id);
+    const album = await this.trackService.findOne(id);
     if (!album) {
       res.status(HttpStatus.NOT_FOUND);
     }
@@ -41,13 +41,12 @@ export class TrackController {
   }
 
   @Put(':id')
-  update(
+  async update(
     @UUIDParam('id') id: string,
     @Body() updateTrackDto: UpdateTrackDto,
     @Res({ passthrough: true }) res: Response,
   ) {
-    const track = this.trackService.findOne(id);
-    if (!track) {
+    if (!(await this.trackService.findOne(id))) {
       res.status(HttpStatus.NOT_FOUND);
       return null;
     }
@@ -56,11 +55,11 @@ export class TrackController {
   }
 
   @Delete(':id')
-  remove(
+  async remove(
     @UUIDParam('id') id: string,
     @Res({ passthrough: true }) res: Response,
   ) {
-    if (this.trackService.remove(id)) {
+    if (await this.trackService.remove(id)) {
       res.status(HttpStatus.NO_CONTENT);
     } else {
       res.status(HttpStatus.NOT_FOUND);

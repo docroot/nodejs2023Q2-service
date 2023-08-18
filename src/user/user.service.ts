@@ -10,7 +10,7 @@ import * as uuid from 'uuid';
 export class UserService {
   constructor(
     @InjectRepository(User)
-    private readonly usersRepository: Repository<User>,
+    private readonly repository: Repository<User>,
   ) {}
 
   async create(dto: CreateUserDto): Promise<User | null> {
@@ -24,28 +24,28 @@ export class UserService {
       updatedAt: timestamp,
     });
 
-    await this.usersRepository.insert(user);
+    await this.repository.insert(user);
     const id = user.id;
-    const u = await this.usersRepository.findOneBy({ id });
+    const u = await this.repository.findOneBy({ id });
     return u;
   }
 
   findAll(): Promise<User[]> {
-    return this.usersRepository.find();
+    return this.repository.find();
   }
 
   async findOne(id: string): Promise<User | null> {
-    return await this.usersRepository.findOneBy({ id });
+    return await this.repository.findOneBy({ id });
   }
 
   async update(id: string, dto: UpdateUserDto): Promise<User | null> {
     if (uuid.validate(id)) {
-      const user = await this.usersRepository.findOneBy({ id });
+      const user = await this.repository.findOneBy({ id });
       if (!user || !dto.newPassword) return null;
       user.password = dto.newPassword;
       user.version++;
       user.updatedAt = new Date().getTime();
-      await this.usersRepository.update({ id }, user);
+      await this.repository.update({ id }, user);
       return user;
     } else {
       return null;
@@ -53,12 +53,12 @@ export class UserService {
   }
 
   async remove(id: string): Promise<boolean> {
-    const user = await this.usersRepository.findOneBy({ id });
+    const user = await this.repository.findOneBy({ id });
 
     if (user == null) {
       return false;
     }
-    await this.usersRepository.delete(id);
+    await this.repository.delete(id);
 
     return true;
   }

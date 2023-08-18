@@ -63,8 +63,7 @@ export class UserController {
       return false;
     }
 
-    const u = await this.userService.update(id, updateUserDto);
-    return u;
+    return await this.userService.update(id, updateUserDto);
   }
 
   @Delete(':id')
@@ -72,9 +71,7 @@ export class UserController {
     @UUIDParam('id') id: string,
     @Res({ passthrough: true }) res: Response,
   ) {
-    const result = await this.userService.remove(id);
-
-    if (result) {
+    if (await this.userService.remove(id)) {
       res.status(HttpStatus.NO_CONTENT);
     } else {
       res.status(HttpStatus.NOT_FOUND);
