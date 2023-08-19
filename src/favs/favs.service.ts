@@ -13,21 +13,22 @@ import { Track } from 'src/track/entities/track.entity';
 export class FavsService {
   constructor(
     @InjectDataSource()
-    private readonly dataSource: DataSource, // private readonly db: ImDbService,
+    private readonly dataSource: DataSource,
   ) {}
 
   async getFavs(): Promise<FavsDto | null> {
     const dto = new FavsDto();
+
     const artists = await this.dataSource
       .getRepository(FavArtist)
       .find({ relations: { artist: true } });
     dto.artists = artists.map((fa) =>
       Artist.create(fa.artist.id, fa.artist.name, fa.artist.grammy),
     );
+
     const albums = await this.dataSource
       .getRepository(FavAlbum)
       .find({ relations: { album: true } });
-    Logger.log(JSON.stringify(albums));
     dto.albums = albums.map((fa) =>
       Album.create(
         fa.album.id,
@@ -36,10 +37,10 @@ export class FavsService {
         fa.album.artistId,
       ),
     );
+
     const tracks = await this.dataSource
       .getRepository(FavTrack)
       .find({ relations: { track: true } });
-    // Logger.log(JSON.stringify(tracks));
     dto.tracks = tracks.map((ft) =>
       Track.create(
         ft.track.id,
