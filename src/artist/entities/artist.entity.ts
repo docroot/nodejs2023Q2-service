@@ -14,4 +14,12 @@ export class Artist {
 
   @OneToMany(() => Album, (album) => album.artist)
   albums: Album[];
+
+  static create(id: string, name: string, grammy: boolean): Artist {
+    const artist = new Artist();
+    artist.id = id;
+    artist.name = name;
+    artist.grammy = grammy;
+    return artist;
+  }
 }

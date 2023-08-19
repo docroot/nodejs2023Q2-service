@@ -7,6 +7,7 @@ import { Track } from './entities/track.entity';
 import { Artist } from 'src/artist/entities/artist.entity';
 import * as uuid from 'uuid';
 import { Album } from 'src/album/entities/album.entity';
+import { FavTrack } from 'src/favs/entities/fav_track.entity';
 
 @Injectable()
 export class TrackService {
@@ -74,6 +75,8 @@ export class TrackService {
     if (track == null) {
       return false;
     }
+
+    await this.dataSource.getRepository(FavTrack).delete({ id });
 
     await this.repository.delete(id);
 

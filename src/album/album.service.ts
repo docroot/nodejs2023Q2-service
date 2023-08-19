@@ -7,6 +7,7 @@ import { Album } from './entities/album.entity';
 import { Artist } from 'src/artist/entities/artist.entity';
 import { Track } from 'src/track/entities/track.entity';
 import * as uuid from 'uuid';
+import { FavAlbum } from 'src/favs/entities/fav_album.entity';
 
 @Injectable()
 export class AlbumService {
@@ -66,9 +67,12 @@ export class AlbumService {
     if (artist == null) {
       return false;
     }
+
     await this.dataSource
       .getRepository(Track)
       .update({ albumId: id }, { album: null, albumId: null });
+
+    await this.dataSource.getRepository(FavAlbum).delete({ id });
     await this.repository.delete(id);
 
     return true;

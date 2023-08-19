@@ -16,10 +16,16 @@ export class Track {
   @Column()
   name: string;
 
-  @ManyToOne(() => Artist, (artist) => artist.albums)
+  @ManyToOne(() => Artist, (artist) => artist.albums, {
+    cascade: true,
+    onDelete: 'SET NULL',
+  })
   artist: Artist | null;
 
-  @ManyToOne(() => Album, (album) => album.tracks)
+  @ManyToOne(() => Album, (album) => album.tracks, {
+    cascade: true,
+    onDelete: 'SET NULL',
+  })
   album: Album | null;
 
   @Column({ nullable: true })
@@ -32,4 +38,20 @@ export class Track {
 
   @Column()
   duration: number;
+
+  static create(
+    id: string,
+    name: string,
+    duration: number,
+    artistId: string,
+    albumId: string,
+  ): Track {
+    const track = new Track();
+    track.id = id;
+    track.name = name;
+    track.duration = duration;
+    track.artistId = artistId;
+    track.albumId = albumId;
+    return track;
+  }
 }

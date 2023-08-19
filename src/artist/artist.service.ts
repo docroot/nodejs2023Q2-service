@@ -5,8 +5,9 @@ import { CreateArtistDto } from './dto/create-artist.dto';
 import { UpdateArtistDto } from './dto/update-artist.dto';
 import { Artist } from './entities/artist.entity';
 import { Album } from 'src/album/entities/album.entity';
-import * as uuid from 'uuid';
 import { Track } from 'src/track/entities/track.entity';
+import * as uuid from 'uuid';
+import { FavArtist } from 'src/favs/entities/fav_artist.entity';
 
 @Injectable()
 export class ArtistService {
@@ -65,6 +66,7 @@ export class ArtistService {
     await this.dataSource
       .getRepository(Track)
       .update({ artistId: id }, { artist: null, artistId: null });
+    await this.dataSource.getRepository(FavArtist).delete({ id });
     await this.repository.delete(id);
 
     return true;

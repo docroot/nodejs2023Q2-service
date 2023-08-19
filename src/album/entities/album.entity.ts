@@ -29,4 +29,18 @@ export class Album {
   @Column({ nullable: true })
   @RelationId((album: Album) => album.artist)
   artistId: string | null;
+
+  static create(
+    id: string,
+    name: string,
+    year: number,
+    artistId: string,
+  ): Album {
+    const album = new Album();
+    album.id = id;
+    album.name = name;
+    album.year = year;
+    album.artistId = artistId;
+    return album;
+  }
 }

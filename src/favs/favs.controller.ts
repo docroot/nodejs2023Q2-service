@@ -9,16 +9,16 @@ export class FavsController {
   constructor(private readonly favsService: FavsService) {}
 
   @Get()
-  getFavs(): FavsDto {
-    return this.favsService.getFavs();
+  async getFavs(): Promise<FavsDto | null> {
+    return await this.favsService.getFavs();
   }
 
   @Post('track/:id')
-  addTrack(
+  async addTrack(
     @UUIDParam('id') id: string,
     @Res({ passthrough: true }) res: Response,
   ) {
-    if (this.favsService.addTrack(id)) {
+    if (await this.favsService.addTrack(id)) {
       res.status(HttpStatus.CREATED);
     } else {
       res.status(HttpStatus.UNPROCESSABLE_ENTITY);
@@ -26,11 +26,11 @@ export class FavsController {
   }
 
   @Delete('track/:id')
-  removeTrack(
+  async removeTrack(
     @UUIDParam('id') id: string,
     @Res({ passthrough: true }) res: Response,
   ) {
-    if (this.favsService.removeTrack(id)) {
+    if (await this.favsService.removeTrack(id)) {
       res.status(HttpStatus.NO_CONTENT);
     } else {
       res.status(HttpStatus.NOT_FOUND);
@@ -38,11 +38,11 @@ export class FavsController {
   }
 
   @Post('artist/:id')
-  addArtist(
+  async addArtist(
     @UUIDParam('id') id: string,
     @Res({ passthrough: true }) res: Response,
   ) {
-    if (this.favsService.addArtist(id)) {
+    if (await this.favsService.addArtist(id)) {
       res.status(HttpStatus.CREATED);
     } else {
       res.status(HttpStatus.UNPROCESSABLE_ENTITY);
@@ -50,11 +50,11 @@ export class FavsController {
   }
 
   @Delete('artist/:id')
-  removeArtist(
+  async removeArtist(
     @UUIDParam('id') id: string,
     @Res({ passthrough: true }) res: Response,
   ) {
-    if (this.favsService.removeArtist(id)) {
+    if (await this.favsService.removeArtist(id)) {
       res.status(HttpStatus.NO_CONTENT);
     } else {
       res.status(HttpStatus.NOT_FOUND);
@@ -62,11 +62,11 @@ export class FavsController {
   }
 
   @Post('album/:id')
-  addAlbum(
+  async addAlbum(
     @UUIDParam('id') id: string,
     @Res({ passthrough: true }) res: Response,
   ) {
-    if (this.favsService.addAlbum(id)) {
+    if (await this.favsService.addAlbum(id)) {
       res.status(HttpStatus.CREATED);
     } else {
       res.status(HttpStatus.UNPROCESSABLE_ENTITY);
@@ -74,11 +74,11 @@ export class FavsController {
   }
 
   @Delete('album/:id')
-  removeAlbum(
+  async removeAlbum(
     @UUIDParam('id') id: string,
     @Res({ passthrough: true }) res: Response,
   ) {
-    if (this.favsService.removeAlbum(id)) {
+    if (await this.favsService.removeAlbum(id)) {
       res.status(HttpStatus.NO_CONTENT);
     } else {
       res.status(HttpStatus.NOT_FOUND);
