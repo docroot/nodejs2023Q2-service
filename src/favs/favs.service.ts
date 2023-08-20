@@ -94,9 +94,6 @@ export class FavsService {
     }
     const newFa = new FavArtist();
     newFa.id = id;
-    // newFa.artist = artist;
-    // Logger.log(JSON.stringify(artist));
-    Logger.log(JSON.stringify(newFa));
     if (await this.dataSource.getRepository(FavArtist).insert(newFa)) {
       return true;
     }
