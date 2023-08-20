@@ -27,6 +27,62 @@ After starting the app on port (4000 as default) you can open
 in your browser OpenAPI documentation by typing http://localhost:4000/doc/.
 For more information about OpenAPI/Swagger please visit https://swagger.io/.
 
+## Building and running using Docker
+
+First, you need to have Docker installed.
+
+### Creating volume for storing DB
+
+```
+docker volume create --name=pg_data
+```
+
+### building postgres and app images
+
+Run following command from root directory of the project:
+
+```
+docker compose build
+```
+
+### Running using Docker
+
+To run app execute:
+
+```
+docker compose up -d
+```
+
+-d options is needed for detaching from the console
+
+To stop app:
+
+```
+docker compose down
+```
+
+To use dev mode (auto restart app on changes in src folder) specify dev configuration file:
+
+```
+docker compose -f ./docker-compose-dev.yml build
+
+docker compose -f ./docker-compose-dev.yml up
+
+docker compose -f ./docker-compose-dev.yml down
+
+```
+
+
+### Mixed execution
+
+Unfortunately  suitable development mode (restarting upon changes in src folder)  for docker is not implemented yet.
+But it is possible to run postgres container separately and run the app as usual, also you have to change POSTGRES_HOST variable in .env file to 'localhost':
+
+```
+docker run -p [::1]:5432:5432/tcp -p 0.0.0.0:5432:5432/tcp --rm -d -P -v rsschool-pgdata:/var/lib/postgresql/ --name rsschool-pgsql rsschool_pgsql
+```
+
+
 ## Testing
 
 After application running open new terminal and enter:
