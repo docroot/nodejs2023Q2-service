@@ -1,5 +1,5 @@
 # Use an official Node.js runtime as the base image
-FROM node:18-slim as dev
+FROM node:18-alpine as dev
 
 ARG PORT=4000
 ENV PORT=$PORT
@@ -16,7 +16,7 @@ COPY src ./src
 COPY .env  ./
 
 # Install application dependencies
-RUN npm install && npm run build
+RUN npm install && npm run build && npm cache clean --force
 
 # Expose a port that the application will listen on
 EXPOSE $PORT
