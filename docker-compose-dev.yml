@@ -53,6 +53,7 @@ services:
       - ${PORT}:${PORT}
     volumes:
       - ./src:/usr/src/app/src
+      - ./logs:/var/log/rsschool
     depends_on:
       - pgsql
     networks:

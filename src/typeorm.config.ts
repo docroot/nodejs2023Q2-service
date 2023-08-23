@@ -1,7 +1,4 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
-import * as dotenv from 'dotenv';
-
-dotenv.config();
 
 const pg_host = process.env['DB_HOST'] ?? 'localhost';
 const pg_port = Number(process.env['DB_PORT']) ?? 5432;

@@ -11,14 +11,14 @@ export class LoggingMiddleware implements NestMiddleware {
     const { method, originalUrl, ip, params, body } = req;
     const start = new Date();
 
-    this.logger.log(`[${start.toISOString()}] REQ: ${method}, ${originalUrl}, pararms: ${JSON.stringify(params)}, body: ${JSON.stringify(body)}, from: ${ip}`);
+    this.logger.log(`REQ: ${method}, ${originalUrl}, pararms: ${JSON.stringify(params)}, body: ${JSON.stringify(body)}, from: ${ip}`);
 
     res.on('finish', () => {
-      const { statusCode }= res;
+      const { statusCode } = res;
       const end = new Date();
       const responseTime = end.getTime() - start.getTime();
 
-      this.logger.log(`[${end.toISOString()}] RES: ${method}, ${originalUrl}, code: ${statusCode}, time: ${responseTime}ms`);
+      this.logger.log(`RES: ${method}, ${originalUrl}, code: ${statusCode}, time: ${responseTime}ms`);
     });
 
     next();
