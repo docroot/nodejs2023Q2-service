@@ -7,5 +7,4 @@ import { LogService } from './log.service';
   providers: [LogService],
   exports: [LogService], // Export the logger service to be used in other modules
 })
-
 export class LoggerModule {}
