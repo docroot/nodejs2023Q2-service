@@ -25,8 +25,8 @@ export class RotatingLogfile {
   }
 
   putMessage(message: string) {
-    const logMessage = `[${new Date().toISOString()}] ${message}\n`;
-    this.queue.push(logMessage);
+    // const logMessage = `[${new Date().toISOString()}] ${message}\n`;
+    this.queue.push(message);
     if (!this.isProcessing) {
       this.processQueue();
     }
@@ -56,7 +56,7 @@ export class RotatingLogfile {
   }
 
   private async writeToLog(message: string) {
-    console.log(message);
+    //console.log(message);
     await this.write(message, this.logFileStream);
   }
 
