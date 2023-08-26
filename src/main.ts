@@ -25,18 +25,18 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
+  // Listen for uncaught exceptions
+  process.on('uncaughtException', (error: Error) => {
+    Logger.error(`Uncaught Exception: ${error.message}`);
+  });
 
-    // Listen for uncaught exceptions
-    process.on('uncaughtException', (error: Error) => {
-      Logger.error(`Uncaught Exception: ${error.message}`);
-    });
-
-    // Listen for unhandled promise rejections
-    process.on('unhandledRejection', (reason: any, promise: Promise<any>) => {
-      Logger.error(`Unhandled Rejection: ${reason}`);
-    });
+  // Listen for unhandled promise rejections
+  process.on('unhandledRejection', (reason: any) => {
+    Logger.error(`Unhandled Rejection: ${reason}`);
+  });
 
   await app.listen(port);
   Logger.log(`Server started on port [${port}]`);
 }
+
 bootstrap();
