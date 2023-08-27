@@ -1,16 +1,19 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import * as uuid from 'uuid';
+import { AuthInfo } from 'src/auth/entities/authinfo.entity';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User)
     private readonly repository: Repository<User>,
+    @InjectDataSource()
+    private readonly dataSource: DataSource,
   ) {}
 
   async create(dto: CreateUserDto): Promise<User | null> {
@@ -63,6 +66,7 @@ export class UserService {
     if (user == null) {
       return false;
     }
+    await this.dataSource.getRepository(AuthInfo).delete(id);
     await this.repository.delete(id);
 
     return true;

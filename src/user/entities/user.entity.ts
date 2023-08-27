@@ -1,16 +1,6 @@
 import { Exclude } from 'class-transformer';
+import { BigintTransformer } from 'src/utils/bigint.transformer';
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
-
-class ColumnNumberTransformer {
-  public to(data: number): bigint {
-    return BigInt(data);
-  }
-
-  public from(data: bigint): number {
-    const res: number = Number(data);
-    return res;
-  }
-}
 
 @Entity() // Table name will be "users" by default. If you want to change it use @Table({name: ...})
 export class User {
@@ -27,10 +17,10 @@ export class User {
   @Column()
   version: number;
 
-  @Column({ type: 'bigint', transformer: new ColumnNumberTransformer() })
+  @Column({ type: 'bigint', transformer: new BigintTransformer() })
   createdAt: number;
 
-  @Column({ type: 'bigint', transformer: new ColumnNumberTransformer() })
+  @Column({ type: 'bigint', transformer: new BigintTransformer() })
   updatedAt: number;
 
   constructor(partial: Partial<User>) {
