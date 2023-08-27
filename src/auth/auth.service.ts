@@ -7,6 +7,7 @@ import { UserService } from 'src/user/user.service';
 import { DataSource } from 'typeorm';
 import { AuthInfo } from './entities/authinfo.entity';
 import * as bcrypt from 'bcrypt';
+import { jwtConstants } from './constants';
 
 @Injectable()
 export class AuthService {
@@ -47,18 +48,22 @@ export class AuthService {
       authInfo.atCreatedAt = curtime;
       authInfo.rtCreatedAt = curtime;
       authInfo.accessToken = await this.jwtService.signAsync(payload);
-      authInfo.refreshToken = await this.jwtService.signAsync(payload);
+      authInfo.refreshToken = 'no token yet';
       await this.dataSource.manager.getRepository(AuthInfo).insert(authInfo);
       return {
         accessToken: authInfo.accessToken,
         refreshToken: authInfo.refreshToken,
       };
     } else {
-      return {
-        accessToken: authInfo.accessToken,
-        refreshToken: authInfo.refreshToken,
-      };
+      if (curtime > authInfo.atCreatedAt + jwtConstants.tokenExpireTime) {
+        throw new UnauthorizedException();
+      }
     }
+
+    return {
+      accessToken: authInfo.accessToken,
+      refreshToken: authInfo.refreshToken,
+    };
   }
 
   async getAuthInfo(id: string): Promise<AuthInfo | null> {
@@ -78,8 +83,7 @@ export class AuthService {
   }
 
   private async hashPassword(password: string): Promise<string> {
-    const saltOrRounds = await bcrypt.genSalt();
-    const hash = await bcrypt.hash(password, saltOrRounds);
+    const hash = await bcrypt.hash(password, jwtConstants.cryptSalt);
     return hash;
   }
 }
