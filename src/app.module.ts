@@ -13,6 +13,7 @@ import { LoggerModule } from './log/log.module';
 import { LoggingMiddleware } from './log/log.middleware';
 import { APP_FILTER } from '@nestjs/core';
 import { CustomExceptionFilter } from './log/custom-exception.filter';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { CustomExceptionFilter } from './log/custom-exception.filter';
     TrackModule,
     FavsModule,
     TypeOrmModule.forRoot(typeOrmConfig),
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [

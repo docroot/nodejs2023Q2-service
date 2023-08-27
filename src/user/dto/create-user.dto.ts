@@ -5,6 +5,7 @@ export class CreateUserDto {
   @ApiProperty()
   @IsNotEmpty()
   login: string;
+
   @ApiProperty()
   @IsNotEmpty()
   password: string;
