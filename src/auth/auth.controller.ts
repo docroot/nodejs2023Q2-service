@@ -6,6 +6,7 @@ import {
   HttpStatus,
   Res,
   Logger,
+  HttpException,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { Public } from './public.decorator';
@@ -41,5 +42,16 @@ export class AuthController {
       res.status(HttpStatus.CREATED);
     }
     return user;
+  }
+
+  @Public()
+  @HttpCode(HttpStatus.OK)
+  @Post('refresh')
+  async refresh(@Body() body: any) {
+    if (!body || body.refreshToken === undefined) {
+      throw new HttpException('UNAUTHORIZED', HttpStatus.UNAUTHORIZED);
+    }
+
+    return await this.authService.refresh(body.refreshToken);
   }
 }

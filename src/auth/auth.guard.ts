@@ -33,14 +33,16 @@ export class AuthGuard implements CanActivate {
       throw new UnauthorizedException();
     }
     try {
+      // I am not sure, but probably we have to compare received token with the token form our DB
       const payload = await this.jwtService.verifyAsync(token, {
         secret: jwtConstants.jwtSecretKey,
       });
       Logger.debug(`PAYLOAD: [${JSON.stringify(payload)}]`);
-      // 💡 We're assigning the payload to the request object here
+      // We're assigning the payload to the request object here
       // so that we can access it in our route handlers
       request['user'] = payload;
-    } catch {
+    } catch (error) {
+      Logger.debug(`TOKEN ERROR: ${error.message}`);
       throw new UnauthorizedException();
     }
     return true;

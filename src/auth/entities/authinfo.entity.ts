@@ -1,5 +1,4 @@
 import { User } from 'src/user/entities/user.entity';
-import { BigintTransformer } from 'src/utils/bigint.transformer';
 import { Column, Entity, JoinColumn, OneToOne, PrimaryColumn } from 'typeorm';
 
 @Entity()
@@ -13,11 +12,11 @@ export class AuthInfo {
   @Column()
   refreshToken: string;
 
-  @Column({ type: 'bigint', transformer: new BigintTransformer() })
-  atCreatedAt: number;
+  //   @Column({ type: 'bigint', transformer: new BigintTransformer() })
+  //   atCreatedAt: number;
 
-  @Column({ type: 'bigint', transformer: new BigintTransformer() })
-  rtCreatedAt: number;
+  //   @Column({ type: 'bigint', transformer: new BigintTransformer() })
+  //   rtCreatedAt: number;
 
   @OneToOne(() => User)
   @JoinColumn({ name: 'id' })
