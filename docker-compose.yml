@@ -53,11 +53,15 @@ services:
       - ${PORT}:${PORT}
     depends_on:
       - pgsql
+    volumes:
+      - node_logs:/var/log/rsschool
     networks:
       - rsschool-network
 
 volumes:
   pg_data:
+    external: true
+  node_logs:
     external: true
 
 networks:

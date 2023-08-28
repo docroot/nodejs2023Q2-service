@@ -37,6 +37,12 @@ First, you need to have Docker installed.
 docker volume create --name=pg_data
 ```
 
+### Creating volume for storing app's logs
+
+```
+docker volume create --name=node_logs
+```
+
 ### building postgres and app images
 
 Run following command from root directory of the project:
@@ -61,6 +67,9 @@ To stop app:
 docker compose down
 ```
 
+### Running in dev mode using Docker
+
+
 To use dev mode (auto restart app on changes in src folder) specify dev configuration file:
 
 ```
@@ -71,6 +80,8 @@ docker compose -f ./docker-compose-dev.yml up
 docker compose -f ./docker-compose-dev.yml down
 
 ```
+
+Also, you need to create a folder named 'logs' in the root directory of the project, it is mounted inside the app's container in dev mode, so you are able to access logs easily
 
 
 ### Mixed execution
